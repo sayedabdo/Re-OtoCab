@@ -1,0 +1,6 @@
+framework module Pods_Re_OtoCab {
+  umbrella header "Pods-Re-OtoCab-umbrella.h"
+
+  export *
+  module * { export * }
+}
