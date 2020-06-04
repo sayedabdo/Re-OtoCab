@@ -159,7 +159,7 @@ extension ViewController{
     func drawPath() {
         let origin = "\(sourceLat),\(sourceLng)"
         let destination = "\(destinationLat),\(destinationLng)"
-       let url = "https://maps.googleapis.com/maps/api/directions/json?origin=\(origin)&destination=\(destination)&mode=driving"
+       let url = "https://maps.googleapis.com/maps/api/directions/json?origin=\(origin)&destination=\(destination)&mode=driving&key=AIzaSyBGoiGaSMmHQQhF2LPw20_Q3cqVowJYThA"
        AF.request(url).responseJSON { (reseponse) in
                     guard let data = reseponse.data else {
                         return
@@ -198,8 +198,8 @@ extension ViewController{
        print("Place longitude: \(place.coordinate.longitude)")
         let location = GMSCameraPosition.camera(withLatitude: place.coordinate.latitude, longitude: place.coordinate.longitude, zoom: 17.0)
       //  let location = GMSCameraPosition.camera(withLatitude: 30.128611, longitude: 31.242222, zoom: 17.0)
-        let marker = GMSMarker(position: CLLocationCoordinate2DMake(30.128611, 31.242222))
-        marker.title = "Your place selected :)"
+        let marker = GMSMarker(position: CLLocationCoordinate2DMake(place.coordinate.latitude, place.coordinate.latitude))
+        marker.title = "\(place.name!) :)"
         marker.map = mapView
         mapView.camera = location
         mapView.animate(to: location)
