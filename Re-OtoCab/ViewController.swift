@@ -12,7 +12,7 @@ import GoogleMaps
 import Alamofire
 import SwiftyJSON
 
-class ViewController: UIViewController, CLLocationManagerDelegate, GMSMapViewDelegate , UISearchBarDelegate  {
+class ViewController: UIViewController, CLLocationManagerDelegate, GMSMapViewDelegate , UISearchBarDelegate ,GMSAutocompleteResultsViewControllerDelegate {
     // place declare params
      var locationManager: CLLocationManager!
      var currentLocation: CLLocation?
@@ -31,6 +31,11 @@ class ViewController: UIViewController, CLLocationManagerDelegate, GMSMapViewDel
        var destinationLat : Double = 0.0
        var destinationLng : Double = 0.0
        var selectedDestination : Bool = false
+    //search result
+    var resultsViewController: GMSAutocompleteResultsViewController?
+    var searchController: UISearchController?
+    var resultView: UITextView?
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -52,6 +57,21 @@ class ViewController: UIViewController, CLLocationManagerDelegate, GMSMapViewDel
        mapView.isMyLocationEnabled = true
        self.view.addSubview(self.mapView)
        mapView.delegate = self
+        
+        
+        // searching
+        resultsViewController = GMSAutocompleteResultsViewController()
+        resultsViewController?.delegate = self
+        searchController = UISearchController(searchResultsController: resultsViewController)
+        searchController?.searchResultsUpdater = resultsViewController
+        // Put the search bar in the navigation bar.
+        searchController?.searchBar.sizeToFit()
+        navigationItem.titleView = searchController?.searchBar
+        // When UISearchController presents the results view, present it in
+        // this view controller, not one further up the chain.
+        definesPresentationContext = true
+        // Prevent the navigation bar from being hidden when searching.
+        searchController?.hidesNavigationBarDuringPresentation = false
     }
 
     @IBAction func showDirection(_ sender: Any) {
@@ -62,6 +82,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate, GMSMapViewDel
          //   }))
 
          //   self.present(alert, animated: true, completion: nil)
+            
             drawPath()
         }else{
             let alert = UIAlertController(title: "Sorry !!😱😱", message: "please🙏 , select your distination 😉", preferredStyle: .alert)
@@ -167,5 +188,43 @@ extension ViewController{
 }
 // search on place
 extension ViewController{
-    
+    func resultsController(_ resultsController: GMSAutocompleteResultsViewController,
+                            didAutocompleteWith place: GMSPlace) {
+       searchController?.isActive = false
+       // Do something with the selected place.
+       print("Place name: \(place.name)")
+       print("Place address: \(place.formattedAddress)")
+       print("Place latitude: \(place.coordinate.latitude)")
+       print("Place longitude: \(place.coordinate.longitude)")
+        let location = GMSCameraPosition.camera(withLatitude: place.coordinate.latitude, longitude: place.coordinate.longitude, zoom: 17.0)
+      //  let location = GMSCameraPosition.camera(withLatitude: 30.128611, longitude: 31.242222, zoom: 17.0)
+        let marker = GMSMarker(position: CLLocationCoordinate2DMake(30.128611, 31.242222))
+        marker.title = "Your place selected :)"
+        marker.map = mapView
+        mapView.camera = location
+        mapView.animate(to: location)
+
+       
+       
+   //    let alert = UIAlertController(title: "Irjent !!😱😱", message: "Place name: \(place.name!).\n Place address: \(place.formattedAddress!).\n  Place latitude: \(place.coordinate.latitude) .\n Place longitude: \(place.coordinate.longitude) ", preferredStyle: .alert)
+    //   alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { action in
+    //   }))
+       
+   //    self.present(alert, animated: true, completion: nil)
+     }
+
+     func resultsController(_ resultsController: GMSAutocompleteResultsViewController,
+                            didFailAutocompleteWithError error: Error){
+       // TODO: handle the error.
+       print("Error: ", error.localizedDescription)
+     }
+
+     // Turn the network activity indicator on and off again.
+     func didRequestAutocompletePredictions(_ viewController: GMSAutocompleteViewController) {
+       UIApplication.shared.isNetworkActivityIndicatorVisible = true
+     }
+
+     func didUpdateAutocompletePredictions(_ viewController: GMSAutocompleteViewController) {
+       UIApplication.shared.isNetworkActivityIndicatorVisible = false
+     }
 }
