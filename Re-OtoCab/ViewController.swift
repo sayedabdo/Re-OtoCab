@@ -96,7 +96,18 @@ extension ViewController{
 }
 // set pin on map
 extension ViewController{
-    
+    // MARK: function for create a marker pin on map
+    func mapView(_ mapView: GMSMapView, didTapAt coordinate: CLLocationCoordinate2D){
+       print("You tapped at \(coordinate.latitude), \(coordinate.longitude)")
+      // destination = "\(coordinate.latitude),\(coordinate.longitude)"
+     //  destinationLat =  coordinate.latitude
+     //  destinationLng =  coordinate.longitude
+       mapView.clear() // clearing Pin before adding new
+       let marker = GMSMarker(position: coordinate)
+       marker.title = "Your Destination"
+       marker.map = mapView
+      // selectedDestination = true
+    }
 }
 // Ddraw Route
 extension ViewController{
